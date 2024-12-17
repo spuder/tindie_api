@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{Ruby Library to interact with tindie.com api}
   spec.description   = %q{Ruby Library to interact with tindie.com api}
-  spec.homepage      = "github.com/spuder/tindie_api"
+  spec.homepage      = "https://github.com/spuder/tindie_api"
   spec.license       = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
