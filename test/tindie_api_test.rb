@@ -43,5 +43,34 @@ class TindieApiTest < Minitest::Test
     assert_raises(JSON::ParserError) { @api.get_orders_json }
   end
 
+  def test_get_orders_json_returns_empty_hash
+    stub_request = stub_request(:get, "https://www.tindie.com/api/v1/order/?format=json&api_key=#{@api_key}&username=#{@username}")
+    stub_request.to_return(body: '{}')
+  
+    response = @api.get_orders_json
+    assert_equal({}, response)
+  end
+  
+  def test_get_orders_json_returns_non_valid_json
+    stub_request = stub_request(:get, "https://www.tindie.com/api/v1/order/?format=json&api_key=#{@api_key}&username=#{@username}")
+    stub_request.to_return(body: 'Invalid JSON')
+  
+    assert_raises(JSON::ParserError) { @api.get_orders_json }
+  end
+  
+  def test_get_orders_json_returns_empty_array
+    stub_request = stub_request(:get, "https://www.tindie.com/api/v1/order/?format=json&api_key=#{@api_key}&username=#{@username}")
+    stub_request.to_return(body: '[]')
+  
+    response = @api.get_orders_json
+    assert_equal([], response)
+  end
+  
+  # def test_get_orders_json_returns_nil
+  #   stub_request = stub_request(:get, "https://www.tindie.com/api/v1/order/?format=json&api_key=#{@api_key}&username=#{@username}")
+  #   stub_request.to_return(body: '')
+  
+  #   assert_nil(@api.get_orders_json)
+  # end
 
 end

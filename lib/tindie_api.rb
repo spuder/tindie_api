@@ -76,6 +76,7 @@ module TindieApi
       url += "&shipped=#{shipped}" unless shipped.nil?
       uri = URI(url)
       response = Net::HTTP.get(uri)
+      raise JSON::ParserError, "Invalid JSON response from Tindie.com" if response.nil?
       JSON.parse(response)
     end
 
