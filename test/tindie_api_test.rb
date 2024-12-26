@@ -65,6 +65,16 @@ class TindieApiTest < Minitest::Test
     response = @api.get_orders_json
     assert_equal([], response)
   end
+
+  def test_get_orders_json_with_empty_response
+    stub_request = stub_request(:get, "https://www.tindie.com/api/v1/order/?format=json&api_key=#{@api_key}&username=#{@username}")
+    stub_request.to_return(body: '')
+  
+    assert_raises(JSON::ParserError) do
+      @api.get_orders_json
+    end
+  end
+  
   
   # def test_get_orders_json_returns_nil
   #   stub_request = stub_request(:get, "https://www.tindie.com/api/v1/order/?format=json&api_key=#{@api_key}&username=#{@username}")

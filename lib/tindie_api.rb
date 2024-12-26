@@ -76,9 +76,16 @@ module TindieApi
       url += "&shipped=#{shipped}" unless shipped.nil?
       uri = URI(url)
       response = Net::HTTP.get(uri)
-      raise JSON::ParserError, "Invalid JSON response from Tindie.com" if response.nil?
+      
+      if response.nil? || response.empty?
+        raise JSON::ParserError, "Empty response from Tindie API"
+      end
+      
       JSON.parse(response)
-    end
+    rescue JSON::ParserError => e
+      puts "Failed to parse JSON: #{response}"
+      raise e
+    end      
 
     def get_orders(shipped = nil)
       raise ArgumentError, "shipped must be true, false, or nil" if !shipped.nil? && ![true, false].include?(shipped)
