@@ -28,7 +28,7 @@ get "/orders" do
     @api = TindieApi::TindieOrdersAPI.new(@username, @api_key)
 
     # false means unshipped
-    orders = @api.get_orders_json(false)
+    orders = @api.get_all_orders(false)
 
     puts orders.inspect
 
@@ -36,6 +36,13 @@ get "/orders" do
 end
 ```
 
+Note that the Tindie api uses pagination with 20 items (default) and 50 items (max). 
+
+There are 3 ways to get orders depending on the level of abstraction you desire
+
+- `get_orders` (Returns TindieAPI Objects)  
+- `get_orders_json` (Returns Json)  
+- `get_all_orders` (Returns TindieAPI Objects)  
 
 ## Examples
 

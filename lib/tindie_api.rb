@@ -65,15 +65,20 @@ module TindieApi
   end
 
   class TindieOrdersAPI
+    MAX_ITEMS_PER_REQUEST = 50
+
     def initialize(username, api_key)
       @usr = username
       @api = api_key
       @cache = { false => nil, true => nil, nil => nil }
     end
 
-    def get_orders_json(shipped = nil)
+    def get_orders_json(shipped = nil, limit = nil, offset = nil)
       url = "https://www.tindie.com/api/v1/order/?format=json&api_key=#{@api}&username=#{@usr}"
       url += "&shipped=#{shipped}" unless shipped.nil?
+      url += "&limit=#{limit}" unless limit.nil?
+      url += "&offset=#{offset}" unless offset.nil?
+      
       uri = URI(url)
       response = Net::HTTP.get(uri)
       
@@ -85,13 +90,31 @@ module TindieApi
     rescue JSON::ParserError => e
       puts "Failed to parse JSON: #{response}"
       raise e
-    end      
+    end
 
     def get_orders(shipped = nil)
       raise ArgumentError, "shipped must be true, false, or nil" if !shipped.nil? && ![true, false].include?(shipped)
-      result = get_orders_json(shipped)['orders'].map { |i| TindieOrder.new(i) }
-      @cache[shipped] = [Time.now + EXPIRES_TIME, result]
-      result
+      result = get_orders_json(shipped)
+      orders = result['orders'].map { |i| TindieOrder.new(i) }
+      @cache[shipped] = [Time.now + EXPIRES_TIME, orders]
+      orders
+    end
+
+    def get_all_orders(shipped = nil)
+      results = []
+      offset = 0
+      
+      loop do
+        response = get_orders_json(shipped, MAX_ITEMS_PER_REQUEST, offset)
+        orders = response['orders'].map { |i| TindieOrder.new(i) }
+        results.concat(orders)
+        
+        break if response['meta'].nil? || response['meta']['next'].nil?
+        offset += MAX_ITEMS_PER_REQUEST
+        sleep(0.5)
+      end
+      
+      results
     end
 
     def _get_cache_(shipped = nil)
