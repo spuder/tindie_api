@@ -46,7 +46,8 @@ module TindieApi
         postcode: data['shipping_postcode'],
         service: data['shipping_service'],
         state: data['shipping_state'],
-        street: data['shipping_street']
+        street: data['shipping_street'],
+        country_code: data['shipping_country_code']
       }
       @address_str = "#{data['shipping_name']}\n#{data['shipping_street']}\n" \
                      "#{data['shipping_city']} #{data['shipping_state']} #{data['shipping_postcode']}\n" \
