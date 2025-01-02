@@ -1,5 +1,7 @@
 require "test_helper"
 require 'webmock/minitest'
+require 'json'
+require_relative '../lib/tindie_api'
 
 class TindieApiTest < Minitest::Test
   def test_that_it_has_a_version_number
@@ -69,5 +71,34 @@ class TindieApiTest < Minitest::Test
     stub_request = stub_request(:get, "https://www.tindie.com/api/v1/order/?format=json&api_key=#{@api_key}&username=#{@username}")
     stub_request.to_return(body: '')
     assert_raises(JSON::ParserError) { @api.get_orders_json }
+  end
+
+  def test_tindie_order_initialization
+    mock_order_data = {
+      'date' => '2025-01-01T15:59:18Z',
+      'date_shipped' => nil,
+      'shipped' => false,
+      'items' => [],
+      'number' => '12345',
+      'email' => 'test@example.com',
+      'shipping_name' => 'Test Name',
+      'shipping_street' => '123 Test St',
+      'shipping_city' => 'Test City',
+      'shipping_state' => 'TS',
+      'shipping_country' => 'Test Country',
+      'shipping_postcode' => '12345',
+      'total_seller' => '100.00',
+      'total_shipping' => '10.00',
+      'total_subtotal' => '90.00',
+      'total_tindiefee' => '5.00',
+      'total_ccfee' => '2.00'
+    }
+  
+    order = TindieApi::TindieOrder.new(mock_order_data)
+  
+    assert_equal false, order.shipped
+    assert_nil order.date_shipped
+    assert_equal '12345', order.order_number
+    assert_equal 'test@example.com', order.recipient_email
   end
 end

@@ -32,10 +32,9 @@ module TindieApi
     def initialize(data)
       @json_parsed = data
       @date = DateTime.parse(data['date'])
-      @date_shipped = DateTime.parse(data['date_shipped'])
       @products = data['items'].map { |i| TindieProduct.new(i) }
-      @shipped = data['shipped']
       @refunded = data['refunded']
+      @shipped = data['shipped']
       @order_number = data['number']
       @recipient_email = data['email']
       @recipient_phone = data['phone']
@@ -58,6 +57,7 @@ module TindieApi
       @tindie_fee = data['total_tindiefee']
       @cc_fee = data['total_ccfee']
       if @shipped
+        @date_shipped = DateTime.parse(data['date_shipped'])
         @tracking_code = data['tracking_code']
         @tracking_url = data['tracking_url']
       end
